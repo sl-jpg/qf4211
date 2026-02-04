@@ -21,10 +21,13 @@ btc = pd.read_csv('BTC-2023-02_to_2026-02.csv', index_col=0)
 fear_greed = pd.read_csv('fear-greed.csv', index_col=0)
 btc = pd.concat([btc, fear_greed], axis = 1, join ='inner')
 btc= btc.rename(columns ={"value": "fear_greed"}) ## do we need sentiment as a feature 
+btc['target_30d_vol'] = btc['30d_vol'].shift(-30)
+btc.dropna(inplace = True)
 doge = pd.read_csv('DOGE-2023-02_to_2026-02.csv', index_col=0)
 doge = pd.concat([doge, fear_greed], axis = 1, join ='inner')
 doge= doge.rename(columns ={"value": "fear_greed"}) ## do we need sentiment as a feature 
-
+doge['target_30d_vol'] = doge['30d_vol'].shift(-30)
+doge.dropna(inplace = True)
 ##============================
 ## Setting features and target 
 ##============================
@@ -32,10 +35,11 @@ doge= doge.rename(columns ={"value": "fear_greed"}) ## do we need sentiment as a
 features = [
     "volume_in_USDT",
     "funding_rate",
-    "fear_greed"
+    "fear_greed",
+    '30d_vol'
 ]
 
-target = ['30d_vol']
+target = ['target_30d_vol']
 
 # def LGBM_evaluation(df):
 #     X = df[features]
