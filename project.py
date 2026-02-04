@@ -144,6 +144,18 @@ def run_models(df, name="Asset"):
 
     print(f"LASSO RMSE:     {rmse_lasso:.6f} | R²: {r2_lasso:.4f}")
 
+    lasso = lasso_model.named_steps["lasso"]
+    coefs = lasso.coef_
+
+    lasso_importance = pd.DataFrame({
+        "Feature": features,
+        "Coefficient": coefs,
+        "Abs_Importance": np.abs(coefs)
+    }).sort_values(by="Abs_Importance", ascending=False)
+
+    print("\nLASSO Feature Importance:")
+    print(lasso_importance)
+
     # ---------- Random Forest ----------
     rf_model = RandomForestRegressor(
         n_estimators=300,
@@ -159,6 +171,14 @@ def run_models(df, name="Asset"):
     r2_rf = r2_score(y_test, y_pred_rf)
 
     print(f"RandomForest RMSE: {rmse_rf:.6f} | R²: {r2_rf:.4f}")
+
+    rf_importance = pd.DataFrame({
+        "Feature": features,
+        "Importance": rf_model.feature_importances_
+    }).sort_values(by="Importance", ascending=False)
+
+    print("\nRandom Forest Feature Importance:")
+    print(rf_importance)
 
     # ---------- Feature Importance (LGBM) ----------
     importance = lgb_model.feature_importance(importance_type="gain")
